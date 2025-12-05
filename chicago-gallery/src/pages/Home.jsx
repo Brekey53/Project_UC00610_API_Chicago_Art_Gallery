@@ -7,18 +7,44 @@ function Home() {
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Guardar o texto que o utilizador escreve
+  // Usado para o Debounce, esta será para o que o utilizador vê na caixa de pesquisa
+  const [inputValue, setInputValue] = useState("");
+  
+  // Guardar o texto que o utilizador escreve para pequisar na API
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [page, setPage] = useState(1); // Começamos na página 1
-  const [totalPages, setTotalPages] = useState(0); // O total que a API nos vai dizer
+  const [page, setPage] = useState(1); // Começar na página 1
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
+    // Cria um temporizador de 1000ms (1 segundo) para o efeito Debounce
+    const timeoutId = setTimeout(() => {
+      setSearchTerm(inputValue); // Atualiza o termo real
+      setPage(1); // Volta à página 1 quando a pesquisa muda
+    }, 1000);
+
+    return () => clearTimeout(timeoutId); // função para dar reset do timeout sempre que o user escreve algo novo em menos de 1s
+  }, [inputValue]);
+
+ useEffect(() => {
     setLoading(true);
     window.scrollTo(0, 0);
 
+    // logica para pesquisar em toda a coleção e não apenas na pagina atual
+    let url;
+
+    if (searchTerm.trim() === ""){
+      // pesquisa normal caso esteja vazio
+      url = `https://api.artic.edu/api/v1/artworks?page=${page}&limit=12&fields=id,title,image_id,artist_display`;
+    } else {
+      // pesquisa com o termo, ja existe uma vertente da API para resolver este problema
+      // Dentro da documentação encontrei que searchTearm entra dentro de uma query da API, pesquisando assim tudo o que contem a palavra pesquisada, pode ser titlo, descrição, autor, .... (Elasticsearch)
+      // Tambem dentro do parametro da API /artworks/search, a API da sort das obras por score das próprias, fazendo com que apareça as melhores pontuadas em primeiro lugar, o que não acontece no URL a cima
+      // outra diferença é a utilização dos fiels apos o searchTerm, pois caso não se especifique, apenas vai buscar a informação basica da obra, assim obrigamos a ir buscar o que necessitamos. (Hydration (fields))
+      url = `https://api.artic.edu/api/v1/artworks/search?q=${searchTerm}&page=${page}&limit=12&fields=id,title,image_id,artist_display`;
+    }
     // guardar coleção arte por pagina para apresentar varias obras (por pagina)
-    fetch(`https://api.artic.edu/api/v1/artworks?page=${page}&limit=12`)
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
         // // Filtrar para garantir que só mostra obras com imagem
@@ -37,11 +63,12 @@ function Home() {
         console.error("Erro ao carregar: ", error);
         setLoading(false);
       });
-  }, [page]); // O useEffect corre sempre que o page muda
+  }, [page, searchTerm]); // O useEffect corre sempre que o page muda E sempre que a searchTerm muda
 
-  const filteredArtworks = artworks.filter((artwork) =>
-    artwork.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(1); // Se a pesquisa muda, volta à página 1 pois pode apresentar menos resultados do que a pagina em que nos encontramos
+  };
 
   // Funções para mudar de página
   const handleNextPage = () => {
@@ -52,7 +79,7 @@ function Home() {
     if (page > 1) setPage(page - 1);
   };
 
-  if (loading) {
+ if (loading) {
     return (
       <div className="container mt-5 text-center">
         <div className="spinner-border text-primary" role="status">
@@ -69,51 +96,46 @@ function Home() {
 
         <div className="row justify-content-center">
           <div className="col-md-6">
+            {/* Input simples, sem formulário, pois é automático */}
             <input
               type="text"
               className="form-control form-control-lg shadow-sm"
-              placeholder="Pesquisar nesta página..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Comece a escrever para pesquisar (ex: Monet)..."
+              value={inputValue} 
+              // Atualiza o visual instantaneamente, o debounce trata do resto
+              onChange={(e) => setInputValue(e.target.value)} 
             />
+            {/* Pequena ajuda visual para o utilizador saber que está a funcionar */}
+            <small className="text-muted">
+              {inputValue !== searchTerm ? "A aguardar que termine de escrever..." : " "}
+            </small>
           </div>
         </div>
       </div>
 
-      {filteredArtworks.length === 0 ? (
+      {artworks.length === 0 ? (
         <div className="text-center mt-5 text-muted">
-          <h3>Nenhuma obra encontrada nesta página. 🎨</h3>
+          <h3>Nenhuma obra encontrada. 🎨</h3>
         </div>
       ) : (
         <div className="row">
-          {filteredArtworks.map((artwork) => (
+          {artworks.map((artwork) => (
             <ArtworkCard key={artwork.id} artwork={artwork} />
           ))}
         </div>
       )}
 
-      {/* 4. CONTROLOS DE PAGINAÇÃO (BOTOES) */}
-      <div className="d-flex justify-content-center align-items-center mt-5 gap-3">
-        <button
-          className="btn btn-outline-dark"
-          onClick={handlePrevPage}
-          disabled={page === 1} // Desativa se estiver na 1ª página
-        >
-          &larr; Anterior
-        </button>
-
-        <span className="fw-bold">
-          Página {page} de {totalPages}
-        </span>
-
-        <button
-          className="btn btn-outline-dark"
-          onClick={handleNextPage}
-          disabled={page === totalPages} // Desativa se for a última página
-        >
-          Seguinte &rarr;
-        </button>
-      </div>
+      {artworks.length > 0 && (
+        <div className="d-flex justify-content-center align-items-center mt-5 gap-3">
+          <button className="btn btn-outline-dark" onClick={handlePrevPage} disabled={page === 1}>
+            &larr; Anterior
+          </button>
+          <span className="fw-bold">Página {page} de {totalPages}</span>
+          <button className="btn btn-outline-dark" onClick={handleNextPage} disabled={page === totalPages}>
+            Seguinte &rarr;
+          </button>
+        </div>
+      )}
     </div>
   );
 }
