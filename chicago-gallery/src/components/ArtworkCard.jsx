@@ -10,7 +10,7 @@ function ArtworkCard({ artwork }) {
           src={imageUrl}
           className="card-img-top"
           alt={artwork.title}
-          style={{ height: "250px", objectFit: "fill" }}
+          style={{ height: "250px", objectFit: "scale-down" }}
         />
 
         <div className="card-body d-flex flex-column text-start">
