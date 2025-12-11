@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import ArtworkCard from "../components/ArtworkCard";
-// TODO: Pesquisar tudo e nao apenas na pagina atual
-// TODO: Fazer com que apresente sempre 12 peças
+
 
 function Home() {
   const [artworks, setArtworks] = useState([]);
@@ -15,6 +14,7 @@ function Home() {
 
   const [page, setPage] = useState(1); // Começar na página 1
   const [totalPages, setTotalPages] = useState(0);
+  const [goToPageInput, setGoToPageInput] = useState("");
 
   useEffect(() => {
     // Cria um temporizador de 1000ms (1 segundo) para o efeito Debounce
@@ -25,6 +25,7 @@ function Home() {
 
     return () => clearTimeout(timeoutId); // função para dar reset do timeout sempre que o user escreve algo novo em menos de 1s
   }, [inputValue]);
+
 
  useEffect(() => {
     setLoading(true);
@@ -65,10 +66,7 @@ function Home() {
       });
   }, [page, searchTerm]); // O useEffect corre sempre que o page muda E sempre que a searchTerm muda
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setPage(1); // Se a pesquisa muda, volta à página 1 pois pode apresentar menos resultados do que a pagina em que nos encontramos
-  };
+  
 
   // Funções para mudar de página
   const handleNextPage = () => {
@@ -77,6 +75,21 @@ function Home() {
 
   const handlePrevPage = () => {
     if (page > 1) setPage(page - 1);
+  };
+
+  const handleManualPage = (e) => {
+    e.preventDefault(); // Impede a página de recarregar
+
+    // Converter texto para número
+    const pageNumber = parseInt(goToPageInput);
+
+    // Validação: Só muda se for um número válido dentro dos limites
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setPage(pageNumber);
+      setGoToPageInput(""); // Limpa o input depois de ir
+    } else {
+      alert(`Por favor insira um número entre 1 e ${totalPages}`);
+    }
   };
 
  if (loading) {
@@ -96,7 +109,6 @@ function Home() {
 
         <div className="row justify-content-center">
           <div className="col-md-6">
-            {/* Input simples, sem formulário, pois é automático */}
             <input
               type="text"
               className="form-control form-control-lg shadow-sm"
@@ -105,7 +117,6 @@ function Home() {
               // Atualiza o visual instantaneamente, o debounce trata do resto
               onChange={(e) => setInputValue(e.target.value)} 
             />
-            {/* Pequena ajuda visual para o utilizador saber que está a funcionar */}
             <small className="text-muted">
               {inputValue !== searchTerm ? "A aguardar que termine de escrever..." : " "}
             </small>
@@ -126,14 +137,33 @@ function Home() {
       )}
 
       {artworks.length > 0 && (
-        <div className="d-flex justify-content-center align-items-center mt-5 gap-3">
-          <button className="btn btn-outline-dark" onClick={handlePrevPage} disabled={page === 1}>
+        <div className="d-flex justify-content-center align-items-center mt-5 gap-3 flex-wrap">
+          
+          <button className="btn btn-outline-dark" itemID="ButaoAntes" onClick={handlePrevPage} disabled={page === 1}>
             &larr; Anterior
           </button>
+          
           <span className="fw-bold">Página {page} de {totalPages}</span>
-          <button className="btn btn-outline-dark" onClick={handleNextPage} disabled={page === totalPages}>
+          
+          <button className="btn btn-outline-dark" itemID="ButaoDepois" onClick={handleNextPage} disabled={page === totalPages}>
             Seguinte &rarr;
           </button>
+
+          <form onSubmit={handleManualPage} className="d-flex align-items-center gap-2 ms-3">
+            <label className="text-muted small">Ir para:</label>
+            <input
+              type="number"
+              className="form-control form-control-sm text-center"
+              style={{ width: "70px" }}
+              placeholder="#"
+              value={goToPageInput} 
+              onChange={(e) => setGoToPageInput(e.target.value)} 
+            />
+            <button type="submit" className="btn btn-sm btn-dark">
+              Ir
+            </button>
+          </form>
+
         </div>
       )}
     </div>

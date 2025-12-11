@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function ArtworkCard({ artwork }) {
-  const imageUrl = `/api-artic/${artwork.image_id}/full/400,/0/default.jpg`;
+  const imageUrl = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/400,/0/default.jpg`;
 
   return (
     <div className="col-md-4 mb-4">
