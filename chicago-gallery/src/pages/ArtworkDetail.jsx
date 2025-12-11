@@ -29,7 +29,7 @@ function ArtworkDetail(){
     }
     
     const imageUrl = artwork.image_id
-    ? `/api-artic/${artwork.image_id}/full/843,/0/default.jpg`
+    ? `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`
     : "https://via.placeholder.com/843x600?text=Sem+Imagem";
 
     return (
