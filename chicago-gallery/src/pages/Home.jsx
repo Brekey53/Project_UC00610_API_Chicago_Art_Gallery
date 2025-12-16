@@ -112,7 +112,7 @@ function Home() {
             <input
               type="text"
               className="form-control form-control-lg shadow-sm"
-              placeholder="Comece a escrever para pesquisar (ex: Monet)..."
+              placeholder="Pesquisa (ex: autor, localização...)"
               value={inputValue} 
               // Atualiza o visual instantaneamente, o debounce trata do resto
               onChange={(e) => setInputValue(e.target.value)} 

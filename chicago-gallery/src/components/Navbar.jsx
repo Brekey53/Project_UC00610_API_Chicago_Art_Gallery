@@ -23,9 +23,9 @@ function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <a className="nav-link disabled" href="#">
-                Sobre (Em breve)
-              </a>
+              <Link className="nav-link" to="/sobre">
+                Sobre
+              </Link>
             </li>
           </ul>
         </div>
