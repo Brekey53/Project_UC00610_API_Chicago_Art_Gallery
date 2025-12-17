@@ -27,6 +27,11 @@ function Navbar() {
                 Sobre
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/portfolio">
+                Portfólio 3D 🧊
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
