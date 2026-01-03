@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 function Navbar() {
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true); // Começa fechada
+
+  const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div className="container">
@@ -10,25 +15,38 @@ function Navbar() {
         <button
           className="navbar-toggler"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          onClick={handleNavCollapse}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div
+          className={`${isNavCollapsed ? "collapse" : "collapse show"} navbar-collapse`} id="navbarNav"
+        >
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link
+                className="nav-link"
+                to="/"
+                onClick={() => setIsNavCollapsed(true)}
+              >
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/sobre">
+              <Link
+                className="nav-link"
+                to="/sobre"
+                onClick={() => setIsNavCollapsed(true)}
+              >
                 Sobre
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/portfolio">
+              <Link
+                className="nav-link"
+                to="/portfolio"
+                onClick={() => setIsNavCollapsed(true)}
+              >
                 Portfólio 3D 🧊
               </Link>
             </li>
