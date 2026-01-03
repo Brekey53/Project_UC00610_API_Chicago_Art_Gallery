@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import "../style/ArtworkDetail.css"
 
 function ArtworkDetail(){
     const { id } = useParams(); // Captura o ID que vem do URL
@@ -45,8 +46,9 @@ function ArtworkDetail(){
           <img
             src={imageUrl}
             className="img-fluid rounded shadow"
+            id="artworkImage"
             alt={artwork.title}
-            style={{ minHeight: "300px", objectFit: "contain", width: "100%" }}
+            //style={{ minHeight: "300px", objectFit: "contain", width: "100%" }}
           />
         </div>
 

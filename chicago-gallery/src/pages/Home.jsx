@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ArtworkCard from "../components/ArtworkCard";
+import "../style/Home.css"
 
 
 function Home() {
@@ -113,6 +114,7 @@ function Home() {
               type="text"
               className="form-control form-control-lg shadow-sm"
               placeholder="Pesquisa (ex: autor, localização...)"
+              id="textFilter"
               value={inputValue} 
               // Atualiza o visual instantaneamente, o debounce trata do resto
               onChange={(e) => setInputValue(e.target.value)} 

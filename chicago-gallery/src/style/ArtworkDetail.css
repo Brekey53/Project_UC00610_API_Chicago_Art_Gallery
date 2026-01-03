@@ -1,0 +1,12 @@
+#artworkImage:hover{
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important; 
+    transform: scale( 105% );
+}
+
+#artworkImage{
+    transition: all 0.3s ease-in-out;
+    
+}
+
+
+
